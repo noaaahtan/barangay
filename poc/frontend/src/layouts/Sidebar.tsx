@@ -4,7 +4,7 @@ import { useAuth } from '@/context/AuthContext';
 import {
   HiOutlineSquares2X2,
   HiOutlineDocumentText,
-  HiOutlineCube,
+  HiOutlineCalendarDays,
   HiOutlineExclamationCircle,
   HiOutlineClipboardDocumentList,
   HiArrowRightOnRectangle,
@@ -14,7 +14,7 @@ import {
 const adminNavItems = [
   { to: '/', label: 'Dashboard', icon: HiOutlineSquares2X2 },
   { to: '/applications', label: 'Applications', icon: HiOutlineDocumentText },
-  { to: '/equipment', label: 'Equipment', icon: HiOutlineCube },
+  { to: '/equipment-reservations', label: 'Equipment Reservations', icon: HiOutlineCalendarDays },
   { to: '/esumbong', label: 'E-Sumbong', icon: HiOutlineExclamationCircle },
   { to: '/audit-logs', label: 'Audit Logs', icon: HiOutlineClipboardDocumentList },
 ];
@@ -22,7 +22,7 @@ const adminNavItems = [
 const citizenNavItems = [
   { to: '/', label: 'Dashboard', icon: HiOutlineSquares2X2 },
   { to: '/applications', label: 'My Applications', icon: HiOutlineDocumentText },
-  { to: '/equipment', label: 'Equipment', icon: HiOutlineCube },
+  { to: '/my-reservations', label: 'My Reservations', icon: HiOutlineCalendarDays },
   { to: '/esumbong', label: 'E-Sumbong', icon: HiOutlineExclamationCircle },
 ];
 

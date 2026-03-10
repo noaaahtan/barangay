@@ -8,6 +8,7 @@ import {
 } from 'react-icons/hi2';
 import { Link } from 'react-router-dom';
 import { useApplicationsApi } from '@/features/applications/useApplicationsApi';
+import type { EquipmentReservation } from '@/api/types';
 import { ApplicationStatusBadge } from '@/features/applications/ApplicationStatusBadge';
 import type { ApplicationType } from '@/api/types';
 
@@ -21,8 +22,8 @@ const typeLabels: Record<ApplicationType, string> = {
 
 export function CitizenDashboard() {
   const { applications, loading, fetchApplications } = useApplicationsApi();
-  const myReservations = [];
-  const myReports = [];
+  const myReservations: EquipmentReservation[] = [];
+  const myReports: any[] = [];
 
   useEffect(() => {
     fetchApplications({ page: 1, limit: 3 });
@@ -93,7 +94,7 @@ export function CitizenDashboard() {
               <HiOutlineCube className="h-5 w-5 text-brand-600" />
               Equipment Reservations
             </h2>
-            <Link to="/equipment/reserve">
+            <Link to="/my-reservations">
               <Button size="sm" variant="primary">
                 <HiOutlinePlus className="h-4 w-4 mr-1" />
                 Reserve
@@ -103,7 +104,7 @@ export function CitizenDashboard() {
           {myReservations.length === 0 ? (
             <div className="text-center py-10">
               <p className="text-sm text-slate-500 mb-5 font-medium">No reservations yet</p>
-              <Link to="/equipment/reserve">
+              <Link to="/my-reservations">
                 <Button variant="secondary" size="sm" className="font-medium">Reserve Equipment</Button>
               </Link>
             </div>

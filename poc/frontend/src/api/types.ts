@@ -53,22 +53,37 @@ export interface PaginationMeta {
 }
 
 // ── Applications ──────────────────────────────────────────
-export enum ApplicationType {
-  BARANGAY_CLEARANCE = "BARANGAY_CLEARANCE",
-  CERTIFICATE_OF_RESIDENCY = "CERTIFICATE_OF_RESIDENCY",
-  BUSINESS_PERMIT = "BUSINESS_PERMIT",
-  INDIGENCY_CERTIFICATE = "INDIGENCY_CERTIFICATE",
-  CEDULA = "CEDULA",
-}
+export type ApplicationType =
+  | "BARANGAY_CLEARANCE"
+  | "CERTIFICATE_OF_RESIDENCY"
+  | "BUSINESS_PERMIT"
+  | "INDIGENCY_CERTIFICATE"
+  | "CEDULA";
 
-export enum ApplicationStatus {
-  SUBMITTED = "SUBMITTED",
-  APPROVED = "APPROVED",
-  REJECTED = "REJECTED",
-  READY_FOR_PICKUP = "READY_FOR_PICKUP",
-  COMPLETED = "COMPLETED",
-  CANCELLED = "CANCELLED",
-}
+export const ApplicationType = {
+  BARANGAY_CLEARANCE: "BARANGAY_CLEARANCE" as const,
+  CERTIFICATE_OF_RESIDENCY: "CERTIFICATE_OF_RESIDENCY" as const,
+  BUSINESS_PERMIT: "BUSINESS_PERMIT" as const,
+  INDIGENCY_CERTIFICATE: "INDIGENCY_CERTIFICATE" as const,
+  CEDULA: "CEDULA" as const,
+};
+
+export type ApplicationStatus =
+  | "SUBMITTED"
+  | "APPROVED"
+  | "REJECTED"
+  | "READY_FOR_PICKUP"
+  | "COMPLETED"
+  | "CANCELLED";
+
+export const ApplicationStatus = {
+  SUBMITTED: "SUBMITTED" as const,
+  APPROVED: "APPROVED" as const,
+  REJECTED: "REJECTED" as const,
+  READY_FOR_PICKUP: "READY_FOR_PICKUP" as const,
+  COMPLETED: "COMPLETED" as const,
+  CANCELLED: "CANCELLED" as const,
+};
 
 export interface Application {
   id: string;
@@ -112,4 +127,142 @@ export interface ApplicationsQuery {
   status?: ApplicationStatus;
   type?: ApplicationType;
   search?: string;
+}
+
+// ── Equipment Reservations ──────────────────────────────
+export type EquipmentType =
+  | "CHAIR"
+  | "TABLE"
+  | "TENT"
+  | "SOUND_SYSTEM"
+  | "LIGHTS"
+  | "STAGE_PANEL";
+
+export const EquipmentType = {
+  CHAIR: "CHAIR" as const,
+  TABLE: "TABLE" as const,
+  TENT: "TENT" as const,
+  SOUND_SYSTEM: "SOUND_SYSTEM" as const,
+  LIGHTS: "LIGHTS" as const,
+  STAGE_PANEL: "STAGE_PANEL" as const,
+};
+
+export type EventType =
+  | "BIRTHDAY"
+  | "WEDDING"
+  | "BURIAL"
+  | "COMMUNITY_EVENT"
+  | "SPORTS_EVENT"
+  | "MEETING"
+  | "OTHER";
+
+export const EventType = {
+  BIRTHDAY: "BIRTHDAY" as const,
+  WEDDING: "WEDDING" as const,
+  BURIAL: "BURIAL" as const,
+  COMMUNITY_EVENT: "COMMUNITY_EVENT" as const,
+  SPORTS_EVENT: "SPORTS_EVENT" as const,
+  MEETING: "MEETING" as const,
+  OTHER: "OTHER" as const,
+};
+
+export type EquipmentReservationStatus =
+  | "SUBMITTED"
+  | "FOR_DELIVERY"
+  | "COMPLETED"
+  | "REJECTED"
+  | "CANCELLED";
+
+export const EquipmentReservationStatus = {
+  SUBMITTED: "SUBMITTED" as const,
+  FOR_DELIVERY: "FOR_DELIVERY" as const,
+  COMPLETED: "COMPLETED" as const,
+  REJECTED: "REJECTED" as const,
+  CANCELLED: "CANCELLED" as const,
+};
+
+export interface EquipmentReservationItem {
+  type: EquipmentType;
+  quantity: number;
+}
+
+export interface EquipmentItem {
+  id: string;
+  type: EquipmentType;
+  name: string;
+  quantityTotal: number;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface EquipmentReservation {
+  id: string;
+  referenceNumber: string;
+  status: EquipmentReservationStatus;
+  eventType: EventType;
+  eventName: string;
+  eventLocation: string;
+  startDate: string;
+  endDate: string;
+  requestedItems: EquipmentReservationItem[];
+  approvedItems: EquipmentReservationItem[] | null;
+  notes: string | null;
+  userId: string;
+  reviewedBy: string | null;
+  reviewedAt: string | null;
+  fulfilledAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+  user?: User;
+  reviewer?: User | null;
+}
+
+export interface EquipmentAvailability {
+  type: EquipmentType;
+  total: number;
+  reserved: number;
+  available: number;
+}
+
+export interface EquipmentReservationsQuery {
+  page?: number;
+  limit?: number;
+  status?: EquipmentReservationStatus;
+  search?: string;
+}
+
+export interface CreateEquipmentReservationPayload {
+  eventType: EventType;
+  eventName: string;
+  eventLocation: string;
+  startDate: string;
+  endDate: string;
+  requestedItems: EquipmentReservationItem[];
+}
+
+export interface UpdateReservationStatusPayload {
+  status: EquipmentReservationStatus;
+  approvedItems?: EquipmentReservationItem[];
+  notes?: string;
+}
+
+export interface UpdateEquipmentReservationPayload {
+  eventName?: string;
+  eventLocation?: string;
+  startDate?: string;
+  endDate?: string;
+  requestedItems?: EquipmentReservationItem[];
+  notes?: string;
+}
+
+export interface CreateEquipmentItemPayload {
+  type: EquipmentType;
+  name: string;
+  quantityTotal: number;
+}
+
+export interface UpdateEquipmentItemPayload {
+  name?: string;
+  quantityTotal?: number;
 }

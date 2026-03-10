@@ -9,6 +9,7 @@ import { UsersModule } from "./users/users.module";
 import { AuthModule } from "./auth/auth.module";
 import { AuditLogsModule } from "./audit-logs/audit-logs.module";
 import { ApplicationsModule } from "./applications/applications.module";
+import { EquipmentReservationsModule } from "./equipment-reservations/equipment-reservations.module";
 import { getTypeOrmConfig } from "./config/database.config";
 
 @Module({
@@ -27,6 +28,7 @@ import { getTypeOrmConfig } from "./config/database.config";
     AuthModule,
     AuditLogsModule,
     ApplicationsModule,
+    EquipmentReservationsModule,
   ],
   providers: [
     {

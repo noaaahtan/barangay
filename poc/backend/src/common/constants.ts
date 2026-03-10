@@ -21,3 +21,31 @@ export enum ApplicationStatus {
   COMPLETED = "COMPLETED",
   CANCELLED = "CANCELLED",
 }
+
+// Equipment Reservations
+export enum EquipmentType {
+  CHAIR = "CHAIR",
+  TABLE = "TABLE",
+  TENT = "TENT",
+  SOUND_SYSTEM = "SOUND_SYSTEM",
+  LIGHTS = "LIGHTS",
+  STAGE_PANEL = "STAGE_PANEL",
+}
+
+export enum EventType {
+  BIRTHDAY = "BIRTHDAY",
+  WEDDING = "WEDDING",
+  BURIAL = "BURIAL",
+  COMMUNITY_EVENT = "COMMUNITY_EVENT",
+  SPORTS_EVENT = "SPORTS_EVENT",
+  MEETING = "MEETING",
+  OTHER = "OTHER",
+}
+
+export enum EquipmentReservationStatus {
+  SUBMITTED = "SUBMITTED",
+  FOR_DELIVERY = "FOR_DELIVERY",
+  COMPLETED = "COMPLETED",
+  REJECTED = "REJECTED",
+  CANCELLED = "CANCELLED",
+}
