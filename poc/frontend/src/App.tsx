@@ -1,7 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from '@/context/AuthContext';
-import { ProtectedRoute } from '@/components/ProtectedRoute';
-import { AppLayout } from '@/layouts/AppLayout';
+import { ProtectedRoute } from '@/components/ProtectedRoute';import { AdminRoute } from '@/components/AdminRoute';import { AppLayout } from '@/layouts/AppLayout';
 import { LoginPage } from '@/pages/LoginPage';
 import { DashboardPage } from '@/pages/DashboardPage';
 import { ApplicationsPage } from '@/pages/ApplicationsPage';
@@ -12,6 +11,7 @@ import { MyReservationsPage } from '@/pages/MyReservationsPage';
 import { ESumbongPage } from '@/pages/ESumbongPage';
 import { MyReportsPage } from '@/pages/MyReportsPage';
 import { ReportsManagementPage } from '@/pages/ReportsManagementPage';
+import { ReportDetailsPage } from '@/pages/ReportDetailsPage';
 import { useAuth } from '@/context/AuthContext';
 
 // Wrapper component to route based on user role
@@ -47,7 +47,15 @@ export default function App() {
             <Route path="/my-reservations" element={<MyReservationsPage />} />
             <Route path="/e-sumbong/submit" element={<ESumbongPage />} />
             <Route path="/e-sumbong/my-reports" element={<MyReportsPage />} />
-            <Route path="/e-sumbong/manage" element={<ReportsManagementPage />} />
+            <Route path="/e-sumbong/reports/:id" element={<ReportDetailsPage />} />
+            <Route 
+              path="/e-sumbong/manage" 
+              element={
+                <AdminRoute>
+                  <ReportsManagementPage />
+                </AdminRoute>
+              } 
+            />
             <Route path="/audit-logs" element={<AuditLogsPage />} />
           </Route>
         </Routes>

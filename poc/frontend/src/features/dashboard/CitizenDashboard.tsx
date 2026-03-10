@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { PageHeader, Card, Button, Badge } from '@/components/ui';
 import {
   HiOutlineDocumentText,
@@ -6,9 +6,12 @@ import {
   HiOutlineExclamationCircle,
   HiOutlinePlus,
 } from 'react-icons/hi2';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useApplicationsApi } from '@/features/applications/useApplicationsApi';
-import type { EquipmentReservation } from '@/api/types';
+import { useESumbongApi } from '@/features/e-sumbong/useESumbongApi';
+import { ReportStatusBadge } from '@/features/e-sumbong/ReportStatusBadge';
+import { ReportSeverityBadge } from '@/features/e-sumbong/ReportSeverityBadge';
+import type { EquipmentReservation, ReportType } from '@/api/types';
 import { ApplicationStatusBadge } from '@/features/applications/ApplicationStatusBadge';
 import type { ApplicationType } from '@/api/types';
 
@@ -20,14 +23,28 @@ const typeLabels: Record<ApplicationType, string> = {
   CEDULA: 'Cedula',
 };
 
+const reportTypeLabels: Record<ReportType, string> = {
+  CRIME: 'Crime',
+  NOISE_COMPLAINT: 'Noise Complaint',
+  PUBLIC_SAFETY: 'Public Safety',
+  INFRASTRUCTURE: 'Infrastructure',
+  HEALTH_HAZARD: 'Health Hazard',
+  STRAY_ANIMALS: 'Stray Animals',
+  ILLEGAL_ACTIVITY: 'Illegal Activity',
+  ENVIRONMENTAL: 'Environmental',
+  OTHER: 'Other',
+};
+
 export function CitizenDashboard() {
-  const { applications, loading, fetchApplications } = useApplicationsApi();
+  const navigate = useNavigate();
+  const { applications, loading: appsLoading, fetchApplications } = useApplicationsApi();
+  const { reports: myReports, loading: reportsLoading, fetchReports } = useESumbongApi();
   const myReservations: EquipmentReservation[] = [];
-  const myReports: any[] = [];
 
   useEffect(() => {
     fetchApplications({ page: 1, limit: 3 });
-  }, [fetchApplications]);
+    fetchReports({ page: 1, limit: 3 });
+  }, [fetchApplications, fetchReports]);
 
   return (
     <div className="space-y-6">
@@ -50,7 +67,7 @@ export function CitizenDashboard() {
               </Button>
             </Link>
           </div>
-          {loading ? (
+          {appsLoading ? (
             <div className="text-center py-10">
               <p className="text-sm text-slate-500 mb-5 font-medium">Loading applications...</p>
             </div>
@@ -129,35 +146,64 @@ export function CitizenDashboard() {
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-lg font-semibold text-slate-900 flex items-center gap-2.5">
               <HiOutlineExclamationCircle className="h-5 w-5 text-brand-600" />
-              My E-Sumbong
+              E-Sumbong Reports
             </h2>
-            <Link to="/esumbong/new">
-              <Button size="sm" variant="primary">
-                <HiOutlinePlus className="h-4 w-4 mr-1" />
-                Report
-              </Button>
-            </Link>
+            <Button 
+              size="sm" 
+              variant="primary"
+              onClick={() => navigate('/e-sumbong/submit')}
+            >
+              <HiOutlinePlus className="h-4 w-4 mr-1" />
+              Create
+            </Button>
           </div>
-          {myReports.length === 0 ? (
+          {reportsLoading ? (
+            <div className="text-center py-10">
+              <p className="text-sm text-slate-500 mb-5 font-medium">Loading reports...</p>
+            </div>
+          ) : myReports.length === 0 ? (
             <div className="text-center py-10">
               <p className="text-sm text-slate-500 mb-5 font-medium">No reports yet</p>
-              <Link to="/esumbong/new">
-                <Button variant="secondary" size="sm" className="font-medium">Submit Report</Button>
-              </Link>
+              <Button 
+                variant="secondary" 
+                size="sm" 
+                className="font-medium"
+                onClick={() => navigate('/e-sumbong/submit')}
+              >
+                Submit Your First Report
+              </Button>
             </div>
           ) : (
             <div className="space-y-2">
-              {myReports.map((report: any) => (
-                <div key={report.id} className="flex items-center justify-between p-3 rounded-lg border border-slate-100 hover:bg-brand-50/30">
-                  <div>
-                    <p className="text-sm font-medium text-slate-900">{report.type}</p>
-                    <p className="text-xs text-slate-500">{report.status}</p>
+              {myReports.slice(0, 3).map((report) => (
+                <div
+                  key={report.id}
+                  className="flex items-center justify-between p-3 rounded-lg border border-slate-100 hover:bg-brand-50/30"
+                >
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-1">
+                      <p className="text-sm font-medium text-slate-900">
+                        {report.title}
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-1 text-xs text-slate-500">
+                      <span>{reportTypeLabels[report.type]}</span>
+                      <span>•</span>
+                      <span>{report.referenceNumber}</span>
+                    </div>
                   </div>
-                  <Badge variant={report.status === 'resolved' ? 'success' : 'default'}>
-                    {report.status}
-                  </Badge>
+                  <div className="flex items-center gap-2">
+                    <ReportStatusBadge status={report.status} />
+                  </div>
                 </div>
               ))}
+              {myReports.length > 3 && (
+                <div className="pt-2 text-right">
+                  <Link to="/e-sumbong/my-reports" className="text-sm font-medium text-brand-600 hover:text-brand-700">
+                    View all ({myReports.length})
+                  </Link>
+                </div>
+              )}
             </div>
           )}
         </Card>

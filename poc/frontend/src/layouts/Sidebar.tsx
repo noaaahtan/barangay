@@ -23,8 +23,7 @@ const citizenNavItems = [
   { to: '/', label: 'Dashboard', icon: HiOutlineSquares2X2 },
   { to: '/applications', label: 'My Applications', icon: HiOutlineDocumentText },
   { to: '/my-reservations', label: 'My Reservations', icon: HiOutlineCalendarDays },
-  { to: '/e-sumbong/submit', label: 'Submit E-Sumbong', icon: HiOutlineExclamationCircle },
-  { to: '/e-sumbong/my-reports', label: 'My Reports', icon: HiOutlineClipboardDocumentList },
+  { to: '/e-sumbong/my-reports', label: 'E-Sumbong', icon: HiOutlineExclamationCircle },
 ];
 
 interface SidebarProps {

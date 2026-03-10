@@ -57,13 +57,18 @@ export function useESumbongApi() {
     setLoading(true);
     setError(null);
     try {
-      const { data } = await apiClient.get<{
-        report: Report;
-        responses: ReportResponse[];
-      }>(`/e-sumbong/reports/${id}`);
-      setCurrentReport(data.report);
-      setResponses(data.responses);
-      return data;
+      const { data } = await apiClient.get<
+        | ApiResponse<{ report: Report; responses: ReportResponse[] }>
+        | {
+            report: Report;
+            responses: ReportResponse[];
+          }
+      >(`/e-sumbong/reports/${id}`);
+
+      const payload = "data" in data ? data.data : data;
+      setCurrentReport(payload.report);
+      setResponses(payload.responses);
+      return payload;
     } catch {
       setError("Failed to load report");
       return null;
@@ -77,11 +82,11 @@ export function useESumbongApi() {
       setLoading(true);
       setError(null);
       try {
-        const { data } = await apiClient.post<Report>(
+        const { data } = await apiClient.post<ApiResponse<Report> | Report>(
           "/e-sumbong/reports",
           payload,
         );
-        return data;
+        return "data" in data ? data.data : data;
       } catch {
         setError("Failed to create report");
         return null;
@@ -117,11 +122,11 @@ export function useESumbongApi() {
       setLoading(true);
       setError(null);
       try {
-        const { data } = await apiClient.post<ReportResponse>(
-          `/e-sumbong/reports/${reportId}/responses`,
-          payload,
-        );
-        setResponses((prev) => [...prev, data]);
+        const { data } = await apiClient.post<
+          ApiResponse<ReportResponse> | ReportResponse
+        >(`/e-sumbong/reports/${reportId}/responses`, payload);
+        const responsePayload = "data" in data ? data.data : data;
+        setResponses((prev) => [...prev, responsePayload]);
         return true;
       } catch {
         setError("Failed to add response");
@@ -168,10 +173,10 @@ export function useESumbongApi() {
     setLoading(true);
     setError(null);
     try {
-      const { data } = await apiClient.get<ReportAnalytics>(
-        "/e-sumbong/analytics",
-      );
-      setAnalytics(data);
+      const { data } = await apiClient.get<
+        ApiResponse<ReportAnalytics> | ReportAnalytics
+      >("/e-sumbong/analytics");
+      setAnalytics("data" in data ? data.data : data);
     } catch {
       setError("Failed to load analytics");
     } finally {
@@ -189,16 +194,15 @@ export function useESumbongApi() {
           formData.append("files", file);
         });
 
-        const { data } = await apiClient.post<{ urls: string[] }>(
-          "/e-sumbong/upload-photos",
-          formData,
-          {
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
+        const { data } = await apiClient.post<
+          ApiResponse<{ urls: string[] }> | { urls: string[] }
+        >("/e-sumbong/upload-photos", formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
           },
-        );
-        return data.urls;
+        });
+        const payload = "data" in data ? data.data : data;
+        return payload.urls;
       } catch {
         setError("Failed to upload photos");
         return null;
