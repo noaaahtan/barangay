@@ -4,6 +4,13 @@ export const DEFAULT_PAGE_SIZE = 20;
 // Auth
 export const JWT_SECRET = process.env.JWT_SECRET || "inkly-jwt-secret-dev-only";
 
+export enum UserRole {
+  CITIZEN = "CITIZEN",
+  STAFF = "STAFF",
+  ADMIN = "ADMIN",
+  BARANGAY_POLICE = "BARANGAY_POLICE",
+}
+
 // Applications
 export enum ApplicationType {
   BARANGAY_CLEARANCE = "BARANGAY_CLEARANCE",
@@ -48,4 +55,33 @@ export enum EquipmentReservationStatus {
   COMPLETED = "COMPLETED",
   REJECTED = "REJECTED",
   CANCELLED = "CANCELLED",
+}
+
+// E-Sumbong (Reports)
+export enum ReportType {
+  CRIME = "CRIME",
+  NOISE_COMPLAINT = "NOISE_COMPLAINT",
+  PUBLIC_SAFETY = "PUBLIC_SAFETY",
+  INFRASTRUCTURE = "INFRASTRUCTURE",
+  HEALTH_HAZARD = "HEALTH_HAZARD",
+  STRAY_ANIMALS = "STRAY_ANIMALS",
+  ILLEGAL_ACTIVITY = "ILLEGAL_ACTIVITY",
+  ENVIRONMENTAL = "ENVIRONMENTAL",
+  OTHER = "OTHER",
+}
+
+export enum ReportStatus {
+  SUBMITTED = "SUBMITTED",
+  ACKNOWLEDGED = "ACKNOWLEDGED",
+  INVESTIGATING = "INVESTIGATING",
+  RESOLVED = "RESOLVED",
+  CLOSED = "CLOSED",
+  DISMISSED = "DISMISSED",
+}
+
+export enum ReportSeverity {
+  LOW = "LOW",
+  MEDIUM = "MEDIUM",
+  HIGH = "HIGH",
+  EMERGENCY = "EMERGENCY",
 }

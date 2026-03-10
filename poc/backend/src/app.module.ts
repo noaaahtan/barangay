@@ -10,6 +10,7 @@ import { AuthModule } from "./auth/auth.module";
 import { AuditLogsModule } from "./audit-logs/audit-logs.module";
 import { ApplicationsModule } from "./applications/applications.module";
 import { EquipmentReservationsModule } from "./equipment-reservations/equipment-reservations.module";
+import { ESumbongModule } from "./e-sumbong/e-sumbong.module";
 import { getTypeOrmConfig } from "./config/database.config";
 
 @Module({
@@ -29,6 +30,7 @@ import { getTypeOrmConfig } from "./config/database.config";
     AuditLogsModule,
     ApplicationsModule,
     EquipmentReservationsModule,
+    ESumbongModule,
   ],
   providers: [
     {

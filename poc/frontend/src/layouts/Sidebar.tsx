@@ -15,7 +15,7 @@ const adminNavItems = [
   { to: '/', label: 'Dashboard', icon: HiOutlineSquares2X2 },
   { to: '/applications', label: 'Applications', icon: HiOutlineDocumentText },
   { to: '/equipment-reservations', label: 'Equipment Reservations', icon: HiOutlineCalendarDays },
-  { to: '/esumbong', label: 'E-Sumbong', icon: HiOutlineExclamationCircle },
+  { to: '/e-sumbong/manage', label: 'E-Sumbong Management', icon: HiOutlineExclamationCircle },
   { to: '/audit-logs', label: 'Audit Logs', icon: HiOutlineClipboardDocumentList },
 ];
 
@@ -23,7 +23,8 @@ const citizenNavItems = [
   { to: '/', label: 'Dashboard', icon: HiOutlineSquares2X2 },
   { to: '/applications', label: 'My Applications', icon: HiOutlineDocumentText },
   { to: '/my-reservations', label: 'My Reservations', icon: HiOutlineCalendarDays },
-  { to: '/esumbong', label: 'E-Sumbong', icon: HiOutlineExclamationCircle },
+  { to: '/e-sumbong/submit', label: 'Submit E-Sumbong', icon: HiOutlineExclamationCircle },
+  { to: '/e-sumbong/my-reports', label: 'My Reports', icon: HiOutlineClipboardDocumentList },
 ];
 
 interface SidebarProps {

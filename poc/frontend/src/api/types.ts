@@ -266,3 +266,130 @@ export interface UpdateEquipmentItemPayload {
   name?: string;
   quantityTotal?: number;
 }
+
+// ── E-Sumbong (Reports) ──────────────────────────────────
+export type ReportType =
+  | "CRIME"
+  | "NOISE_COMPLAINT"
+  | "PUBLIC_SAFETY"
+  | "INFRASTRUCTURE"
+  | "HEALTH_HAZARD"
+  | "STRAY_ANIMALS"
+  | "ILLEGAL_ACTIVITY"
+  | "ENVIRONMENTAL"
+  | "OTHER";
+
+export const ReportType = {
+  CRIME: "CRIME" as const,
+  NOISE_COMPLAINT: "NOISE_COMPLAINT" as const,
+  PUBLIC_SAFETY: "PUBLIC_SAFETY" as const,
+  INFRASTRUCTURE: "INFRASTRUCTURE" as const,
+  HEALTH_HAZARD: "HEALTH_HAZARD" as const,
+  STRAY_ANIMALS: "STRAY_ANIMALS" as const,
+  ILLEGAL_ACTIVITY: "ILLEGAL_ACTIVITY" as const,
+  ENVIRONMENTAL: "ENVIRONMENTAL" as const,
+  OTHER: "OTHER" as const,
+};
+
+export type ReportStatus =
+  | "SUBMITTED"
+  | "ACKNOWLEDGED"
+  | "INVESTIGATING"
+  | "RESOLVED"
+  | "CLOSED"
+  | "DISMISSED";
+
+export const ReportStatus = {
+  SUBMITTED: "SUBMITTED" as const,
+  ACKNOWLEDGED: "ACKNOWLEDGED" as const,
+  INVESTIGATING: "INVESTIGATING" as const,
+  RESOLVED: "RESOLVED" as const,
+  CLOSED: "CLOSED" as const,
+  DISMISSED: "DISMISSED" as const,
+};
+
+export type ReportSeverity = "LOW" | "MEDIUM" | "HIGH" | "EMERGENCY";
+
+export const ReportSeverity = {
+  LOW: "LOW" as const,
+  MEDIUM: "MEDIUM" as const,
+  HIGH: "HIGH" as const,
+  EMERGENCY: "EMERGENCY" as const,
+};
+
+export interface Report {
+  id: string;
+  referenceNumber: string;
+  type: ReportType;
+  severity: ReportSeverity;
+  status: ReportStatus;
+  title: string;
+  description: string;
+  latitude: number;
+  longitude: number;
+  locationAddress?: string;
+  isAnonymous: boolean;
+  photoUrls: string[];
+  userId: string;
+  reviewedBy?: string;
+  reviewedAt?: string;
+  resolvedAt?: string;
+  resolutionDetails?: string;
+  submittedAt: string;
+  lastUpdatedAt: string;
+  user?: User;
+  reviewer?: User;
+}
+
+export interface ReportResponse {
+  id: string;
+  reportId: string;
+  responderId: string;
+  responseText: string;
+  createdAt: string;
+  responder?: User;
+}
+
+export interface CreateReportPayload {
+  type: ReportType;
+  severity: ReportSeverity;
+  title: string;
+  description: string;
+  latitude: number;
+  longitude: number;
+  locationAddress?: string;
+  isAnonymous?: boolean;
+  photoUrls?: string[];
+}
+
+export interface UpdateReportStatusPayload {
+  status: ReportStatus;
+  notes?: string;
+}
+
+export interface AddResponsePayload {
+  responseText: string;
+}
+
+export interface ResolveReportPayload {
+  resolutionDetails: string;
+}
+
+export interface ReportsQuery {
+  page?: number;
+  limit?: number;
+  status?: string;
+  type?: string;
+  severity?: string;
+  startDate?: string;
+  endDate?: string;
+  userId?: string;
+  bounds?: string;
+}
+
+export interface ReportAnalytics {
+  totalReports: number;
+  pendingReports: number;
+  resolvedThisWeek: number;
+  emergencyReports: number;
+}

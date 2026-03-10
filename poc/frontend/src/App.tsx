@@ -9,6 +9,9 @@ import { MyApplicationsPage } from '@/pages/MyApplicationsPage';
 import { AuditLogsPage } from '@/pages/AuditLogsPage';
 import { EquipmentReservationsPage } from '@/pages/EquipmentReservationsPage';
 import { MyReservationsPage } from '@/pages/MyReservationsPage';
+import { ESumbongPage } from '@/pages/ESumbongPage';
+import { MyReportsPage } from '@/pages/MyReportsPage';
+import { ReportsManagementPage } from '@/pages/ReportsManagementPage';
 import { useAuth } from '@/context/AuthContext';
 
 // Wrapper component to route based on user role
@@ -42,7 +45,9 @@ export default function App() {
             <Route path="/applications/new" element={<NewApplicationRedirect />} />
             <Route path="/equipment-reservations" element={<EquipmentReservationsPage />} />
             <Route path="/my-reservations" element={<MyReservationsPage />} />
-            <Route path="/esumbong" element={<div className="space-y-6"><h1 className="text-2xl font-bold">E-Sumbong</h1><p className="text-slate-600">Coming soon...</p></div>} />
+            <Route path="/e-sumbong/submit" element={<ESumbongPage />} />
+            <Route path="/e-sumbong/my-reports" element={<MyReportsPage />} />
+            <Route path="/e-sumbong/manage" element={<ReportsManagementPage />} />
             <Route path="/audit-logs" element={<AuditLogsPage />} />
           </Route>
         </Routes>
