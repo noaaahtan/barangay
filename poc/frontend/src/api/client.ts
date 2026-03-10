@@ -1,23 +1,31 @@
-import axios from 'axios';
+import axios from "axios";
 
-const TOKEN_KEY = 'inkly_token';
-const DEFAULT_API_URL = 'http://localhost:3000';
+const TOKEN_KEY = "inkly_token";
+const DEFAULT_API_URL = "http://localhost:3000";
 
 function stripTrailingSlash(url: string): string {
-  return url.replace(/\/+$/, '');
+  return url.replace(/\/+$/, "");
 }
 
 function normalizeApiBaseUrl(rawUrl: string): string {
   const normalizedUrl = stripTrailingSlash(rawUrl);
-  return normalizedUrl.endsWith('/api') ? normalizedUrl : `${normalizedUrl}/api`;
+  return normalizedUrl.endsWith("/api")
+    ? normalizedUrl
+    : `${normalizedUrl}/api`;
 }
 
-const API_URL = stripTrailingSlash(import.meta.env.VITE_API_URL || DEFAULT_API_URL);
+const API_URL = stripTrailingSlash(
+  import.meta.env.VITE_API_URL || DEFAULT_API_URL,
+);
 const API_BASE_URL = normalizeApiBaseUrl(API_URL);
 
 const apiClient = axios.create({
   baseURL: API_BASE_URL,
-  headers: { 'Content-Type': 'application/json' },
+  headers: {
+    "Content-Type": "application/json",
+    "Cache-Control": "no-cache",
+    Pragma: "no-cache",
+  },
 });
 
 // ── Request interceptor: attach JWT ──────────────────────
@@ -36,8 +44,8 @@ apiClient.interceptors.response.use(
     if (error.response?.status === 401) {
       localStorage.removeItem(TOKEN_KEY);
       // Only redirect if not already on login page
-      if (window.location.pathname !== '/login') {
-        window.location.href = '/login';
+      if (window.location.pathname !== "/login") {
+        window.location.href = "/login";
       }
     }
     return Promise.reject(error);

@@ -2,26 +2,31 @@ import {
   Injectable,
   NotFoundException,
   ConflictException,
-} from '@nestjs/common';
-import { CategoriesRepository } from './categories.repository';
-import { AuditLogsService } from '../audit-logs/audit-logs.service';
-import { AuditAction } from '../audit-logs/entities/audit-log.entity';
-import { CreateCategoryDto } from './dto/create-category.dto';
-import { UpdateCategoryDto } from './dto/update-category.dto';
-import { Category } from './entities/category.entity';
+  Logger,
+} from "@nestjs/common";
+import { CategoriesRepository } from "./categories.repository";
+import { AuditLogsService } from "../audit-logs/audit-logs.service";
+import { AuditAction } from "../audit-logs/entities/audit-log.entity";
+import { CreateCategoryDto } from "./dto/create-category.dto";
+import { UpdateCategoryDto } from "./dto/update-category.dto";
+import { Category } from "./entities/category.entity";
 
 @Injectable()
 export class CategoriesService {
+  private readonly logger = new Logger(CategoriesService.name);
+
   constructor(
     private readonly categoriesRepo: CategoriesRepository,
     private readonly auditLogsService: AuditLogsService,
   ) {}
 
   async findAll(): Promise<Category[]> {
+    this.logger.log("findAll");
     return this.categoriesRepo.findAll();
   }
 
   async findOne(id: string): Promise<Category> {
+    this.logger.log(`findOne id=${id}`);
     const category = await this.categoriesRepo.findById(id);
     if (!category) {
       throw new NotFoundException(`Category with id "${id}" not found`);
@@ -30,15 +35,18 @@ export class CategoriesService {
   }
 
   async create(dto: CreateCategoryDto, userId: string): Promise<Category> {
+    this.logger.log(`create name=${dto.name} userId=${userId}`);
     const existing = await this.categoriesRepo.findByName(dto.name);
     if (existing) {
-      throw new ConflictException(`Category with name "${dto.name}" already exists`);
+      throw new ConflictException(
+        `Category with name "${dto.name}" already exists`,
+      );
     }
     const category = await this.categoriesRepo.create(dto);
 
     await this.auditLogsService.log(
       AuditAction.CREATE,
-      'category',
+      "category",
       category.id,
       category.name,
       userId,
@@ -48,13 +56,20 @@ export class CategoriesService {
     return category;
   }
 
-  async update(id: string, dto: UpdateCategoryDto, userId: string): Promise<Category> {
+  async update(
+    id: string,
+    dto: UpdateCategoryDto,
+    userId: string,
+  ): Promise<Category> {
+    this.logger.log(`update id=${id} userId=${userId}`);
     const category = await this.findOne(id);
 
     if (dto.name && dto.name !== category.name) {
       const existing = await this.categoriesRepo.findByName(dto.name);
       if (existing) {
-        throw new ConflictException(`Category with name "${dto.name}" already exists`);
+        throw new ConflictException(
+          `Category with name "${dto.name}" already exists`,
+        );
       }
     }
 
@@ -62,13 +77,14 @@ export class CategoriesService {
     Object.assign(category, dto);
     const updated = await this.categoriesRepo.save(category);
 
-    const details = dto.name && dto.name !== oldName
-      ? `Renamed from "${oldName}" to "${dto.name}"`
-      : 'Updated category';
+    const details =
+      dto.name && dto.name !== oldName
+        ? `Renamed from "${oldName}" to "${dto.name}"`
+        : "Updated category";
 
     await this.auditLogsService.log(
       AuditAction.UPDATE,
-      'category',
+      "category",
       updated.id,
       updated.name,
       userId,
@@ -79,12 +95,13 @@ export class CategoriesService {
   }
 
   async remove(id: string, userId: string): Promise<void> {
+    this.logger.log(`remove id=${id} userId=${userId}`);
     const category = await this.findOne(id);
     await this.categoriesRepo.remove(category);
 
     await this.auditLogsService.log(
       AuditAction.DELETE,
-      'category',
+      "category",
       id,
       category.name,
       userId,

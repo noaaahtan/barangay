@@ -3,19 +3,22 @@ import {
   NotFoundException,
   ConflictException,
   BadRequestException,
-} from '@nestjs/common';
-import { ItemsRepository } from './items.repository';
-import { StockHistoryRepository } from '../stock-history/stock-history.repository';
-import { AuditLogsService } from '../audit-logs/audit-logs.service';
-import { AuditAction } from '../audit-logs/entities/audit-log.entity';
-import { CreateItemDto } from './dto/create-item.dto';
-import { UpdateItemDto } from './dto/update-item.dto';
-import { AdjustStockDto } from './dto/adjust-stock.dto';
-import { ItemsQueryDto } from './dto/items-query.dto';
-import { Item } from './entities/item.entity';
+  Logger,
+} from "@nestjs/common";
+import { ItemsRepository } from "./items.repository";
+import { StockHistoryRepository } from "../stock-history/stock-history.repository";
+import { AuditLogsService } from "../audit-logs/audit-logs.service";
+import { AuditAction } from "../audit-logs/entities/audit-log.entity";
+import { CreateItemDto } from "./dto/create-item.dto";
+import { UpdateItemDto } from "./dto/update-item.dto";
+import { AdjustStockDto } from "./dto/adjust-stock.dto";
+import { ItemsQueryDto } from "./dto/items-query.dto";
+import { Item } from "./entities/item.entity";
 
 @Injectable()
 export class ItemsService {
+  private readonly logger = new Logger(ItemsService.name);
+
   constructor(
     private readonly itemsRepo: ItemsRepository,
     private readonly stockHistoryRepo: StockHistoryRepository,
@@ -24,7 +27,13 @@ export class ItemsService {
 
   async findAll(query: ItemsQueryDto) {
     const { page, limit, search, categoryId } = query;
-    const { items, total } = await this.itemsRepo.findAll({ page, limit, search, categoryId });
+    this.logger.log(`findAll page=${page} limit=${limit}`);
+    const { items, total } = await this.itemsRepo.findAll({
+      page,
+      limit,
+      search,
+      categoryId,
+    });
 
     return {
       data: items,
@@ -38,6 +47,7 @@ export class ItemsService {
   }
 
   async findOne(id: string): Promise<Item> {
+    this.logger.log(`findOne id=${id}`);
     const item = await this.itemsRepo.findById(id);
     if (!item) {
       throw new NotFoundException(`Item with id "${id}" not found`);
@@ -46,6 +56,7 @@ export class ItemsService {
   }
 
   async create(dto: CreateItemDto, userId: string): Promise<Item> {
+    this.logger.log(`create sku=${dto.sku} userId=${userId}`);
     const existing = await this.itemsRepo.findBySku(dto.sku);
     if (existing) {
       throw new ConflictException(`Item with SKU "${dto.sku}" already exists`);
@@ -55,12 +66,12 @@ export class ItemsService {
 
     // Log initial stock if quantity > 0
     if (dto.quantity > 0) {
-      await this.logStockChange(saved, dto.quantity, 'Initial stock');
+      await this.logStockChange(saved, dto.quantity, "Initial stock");
     }
 
     await this.auditLogsService.log(
       AuditAction.CREATE,
-      'item',
+      "item",
       saved.id,
       saved.name,
       userId,
@@ -71,12 +82,15 @@ export class ItemsService {
   }
 
   async update(id: string, dto: UpdateItemDto, userId: string): Promise<Item> {
+    this.logger.log(`update id=${id} userId=${userId}`);
     const item = await this.findOne(id);
 
     if (dto.sku && dto.sku !== item.sku) {
       const existing = await this.itemsRepo.findBySku(dto.sku);
       if (existing) {
-        throw new ConflictException(`Item with SKU "${dto.sku}" already exists`);
+        throw new ConflictException(
+          `Item with SKU "${dto.sku}" already exists`,
+        );
       }
     }
 
@@ -87,18 +101,19 @@ export class ItemsService {
 
     if (dto.quantity !== undefined && dto.quantity !== oldQuantity) {
       const change = dto.quantity - oldQuantity;
-      await this.logStockChange(item, change, 'Manual quantity update');
+      await this.logStockChange(item, change, "Manual quantity update");
     }
 
     // Build details summary
-    const changedFields = Object.keys(dto).filter((k) => k !== 'imageUrl');
-    const details = changedFields.length > 0
-      ? `Updated ${changedFields.join(', ')}`
-      : 'Updated image';
+    const changedFields = Object.keys(dto).filter((k) => k !== "imageUrl");
+    const details =
+      changedFields.length > 0
+        ? `Updated ${changedFields.join(", ")}`
+        : "Updated image";
 
     await this.auditLogsService.log(
       AuditAction.UPDATE,
-      'item',
+      "item",
       item.id,
       item.name,
       userId,
@@ -109,12 +124,13 @@ export class ItemsService {
   }
 
   async remove(id: string, userId: string): Promise<void> {
+    this.logger.log(`remove id=${id} userId=${userId}`);
     const item = await this.findOne(id);
     await this.itemsRepo.remove(item);
 
     await this.auditLogsService.log(
       AuditAction.DELETE,
-      'item',
+      "item",
       id,
       item.name,
       userId,
@@ -122,7 +138,14 @@ export class ItemsService {
     );
   }
 
-  async adjustStock(id: string, dto: AdjustStockDto, userId: string): Promise<Item> {
+  async adjustStock(
+    id: string,
+    dto: AdjustStockDto,
+    userId: string,
+  ): Promise<Item> {
+    this.logger.log(
+      `adjustStock id=${id} change=${dto.quantityChange} userId=${userId}`,
+    );
     const item = await this.findOne(id);
     const newQuantity = item.quantity + dto.quantityChange;
 
@@ -136,10 +159,10 @@ export class ItemsService {
     await this.itemsRepo.save(item);
     await this.logStockChange(item, dto.quantityChange, dto.reason);
 
-    const sign = dto.quantityChange >= 0 ? '+' : '';
+    const sign = dto.quantityChange >= 0 ? "+" : "";
     await this.auditLogsService.log(
       AuditAction.UPDATE,
-      'item',
+      "item",
       item.id,
       item.name,
       userId,
@@ -150,10 +173,12 @@ export class ItemsService {
   }
 
   async findLowStock(): Promise<Item[]> {
+    this.logger.log("findLowStock");
     return this.itemsRepo.findLowStock();
   }
 
   async getStats() {
+    this.logger.log("getStats");
     return this.itemsRepo.getStats();
   }
 

@@ -1,12 +1,32 @@
+import { useEffect } from 'react';
 import { PageHeader, Card, Button, Badge } from '@/components/ui';
-import { HiOutlineDocumentText, HiOutlineCube, HiOutlineExclamationCircle, HiOutlinePlus } from 'react-icons/hi2';
+import {
+  HiOutlineDocumentText,
+  HiOutlineCube,
+  HiOutlineExclamationCircle,
+  HiOutlinePlus,
+} from 'react-icons/hi2';
 import { Link } from 'react-router-dom';
+import { useApplicationsApi } from '@/features/applications/useApplicationsApi';
+import { ApplicationStatusBadge } from '@/features/applications/ApplicationStatusBadge';
+import type { ApplicationType } from '@/api/types';
+
+const typeLabels: Record<ApplicationType, string> = {
+  BARANGAY_CLEARANCE: 'Barangay Clearance',
+  CERTIFICATE_OF_RESIDENCY: 'Certificate of Residency',
+  BUSINESS_PERMIT: 'Business Permit',
+  INDIGENCY_CERTIFICATE: 'Indigency Certificate',
+  CEDULA: 'Cedula',
+};
 
 export function CitizenDashboard() {
-  // TODO: Replace with actual API calls when backend is ready
-  const myApplications = [];
+  const { applications, loading, fetchApplications } = useApplicationsApi();
   const myReservations = [];
   const myReports = [];
+
+  useEffect(() => {
+    fetchApplications({ page: 1, limit: 3 });
+  }, [fetchApplications]);
 
   return (
     <div className="space-y-6">
@@ -22,33 +42,47 @@ export function CitizenDashboard() {
               <HiOutlineDocumentText className="h-5 w-5 text-brand-600" />
               My Applications
             </h2>
-            <Link to="/applications/new">
+            <Link to="/applications" state={{ openNewApplication: true }}>
               <Button size="sm" variant="primary">
                 <HiOutlinePlus className="h-4 w-4 mr-1" />
                 New
               </Button>
             </Link>
           </div>
-          {myApplications.length === 0 ? (
+          {loading ? (
+            <div className="text-center py-10">
+              <p className="text-sm text-slate-500 mb-5 font-medium">Loading applications...</p>
+            </div>
+          ) : applications.length === 0 ? (
             <div className="text-center py-10">
               <p className="text-sm text-slate-500 mb-5 font-medium">No applications yet</p>
-              <Link to="/applications/new">
+              <Link to="/applications" state={{ openNewApplication: true }}>
                 <Button variant="secondary" size="sm" className="font-medium">Apply for Requirements</Button>
               </Link>
             </div>
           ) : (
             <div className="space-y-2">
-              {myApplications.map((app: any) => (
-                <div key={app.id} className="flex items-center justify-between p-3 rounded-lg border border-slate-100 hover:bg-brand-50/30">
+              {applications.map((app) => (
+                <div
+                  key={app.id}
+                  className="flex items-center justify-between p-3 rounded-lg border border-slate-100 hover:bg-brand-50/30"
+                >
                   <div>
-                    <p className="text-sm font-medium text-slate-900">{app.type}</p>
-                    <p className="text-xs text-slate-500">{app.status}</p>
+                    <p className="text-sm font-medium text-slate-900">
+                      {typeLabels[app.type] ?? app.type}
+                    </p>
+                    <p className="text-xs text-slate-500">{app.referenceNumber}</p>
                   </div>
-                  <Badge variant={app.status === 'ready' ? 'success' : 'default'}>
-                    {app.status}
-                  </Badge>
+                  <ApplicationStatusBadge status={app.status} />
                 </div>
               ))}
+              {applications.length >= 3 && (
+                <div className="pt-2 text-right">
+                  <Link to="/applications" className="text-sm font-medium text-brand-600 hover:text-brand-700">
+                    View all
+                  </Link>
+                </div>
+              )}
             </div>
           )}
         </Card>

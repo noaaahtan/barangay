@@ -2,4 +2,22 @@ export const DEFAULT_LOW_STOCK_THRESHOLD = 10;
 export const DEFAULT_PAGE_SIZE = 20;
 
 // Auth
-export const JWT_SECRET = process.env.JWT_SECRET || 'inkly-jwt-secret-dev-only';
+export const JWT_SECRET = process.env.JWT_SECRET || "inkly-jwt-secret-dev-only";
+
+// Applications
+export enum ApplicationType {
+  BARANGAY_CLEARANCE = "BARANGAY_CLEARANCE",
+  CERTIFICATE_OF_RESIDENCY = "CERTIFICATE_OF_RESIDENCY",
+  BUSINESS_PERMIT = "BUSINESS_PERMIT",
+  INDIGENCY_CERTIFICATE = "INDIGENCY_CERTIFICATE",
+  CEDULA = "CEDULA",
+}
+
+export enum ApplicationStatus {
+  SUBMITTED = "SUBMITTED",
+  APPROVED = "APPROVED",
+  REJECTED = "REJECTED",
+  READY_FOR_PICKUP = "READY_FOR_PICKUP",
+  COMPLETED = "COMPLETED",
+  CANCELLED = "CANCELLED",
+}
