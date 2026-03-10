@@ -84,9 +84,16 @@ export function AdminDashboard() {
           metricsPayload ?? { total: 0, pendingReview: 0, readyForPickup: 0 },
         );
         setRecentApplications(recentPayload ?? []);
-        setEquipmentMetrics(equipmentMetricsRes.data ?? { total: 0, pendingApproval: 0, upcomingThisWeek: 0 });
+        const equipmentMetricsPayload = 'data' in equipmentMetricsRes.data
+          ? equipmentMetricsRes.data.data
+          : equipmentMetricsRes.data;
+        const reportMetricsPayload = 'data' in reportMetricsRes.data
+          ? reportMetricsRes.data.data
+          : reportMetricsRes.data;
+
+        setEquipmentMetrics(equipmentMetricsPayload ?? { total: 0, pendingApproval: 0, upcomingThisWeek: 0 });
         setRecentReservations(Array.isArray(equipmentRecentPayload) ? equipmentRecentPayload : []);
-        setReportMetrics(reportMetricsRes.data ?? { totalReports: 0, pendingReports: 0, resolvedThisWeek: 0, emergencyReports: 0 });
+        setReportMetrics(reportMetricsPayload ?? { totalReports: 0, pendingReports: 0, resolvedThisWeek: 0, emergencyReports: 0 });
         setRecentReports(Array.isArray(reportsPayload) ? reportsPayload : []);
       } catch (error) {
         console.error('Failed to fetch dashboard data:', error);
